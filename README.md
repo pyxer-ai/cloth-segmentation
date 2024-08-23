@@ -1,3 +1,22 @@
+# Fine-tuning cloth segmentation
+
+Convert the [Human Parsing ATR dataset](https://github.com/lemondan/HumanParsing-Dataset) into format of imaterialist. A `csv` with 5 columns: `ImageId`, `EncodedPixels`, `Height`, `Width`, `ClassId`. Multiple rows can have the same image id but different class ids, representing the different class masks. For class labels, converted ATR classes to only 4 classes via the following mapping:
+```python
+    class_mapping = {
+        0: 0,
+        4: 1,
+        5: 2,
+        6: 2,
+        7: 3,
+    }
+```
+
+and ignore all other classes. Refer to kaggle dataset for full explanation of EncodedPixels and the dataset format.
+
+Run the script `create_dataset.py` with the correct paths to convert the ATR dataset in above described format.
+
+Check out the notebook `dataset.ipynb` for visualization and experimentation.
+
 # Clothes Segmentation using U2NET #
 
 ![Python 3.8](https://img.shields.io/badge/python-3.8-green.svg)
