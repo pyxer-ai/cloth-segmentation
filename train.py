@@ -63,7 +63,7 @@ def training_loop(opt):
 
     u_net = U2NET(in_ch=3, out_ch=4)
     if opt.continue_train:
-        u_net = load_checkpoint(u_net, opt.unet_checkpoint)
+        u_net = load_checkpoint_mgpu(u_net, opt.unet_checkpoint)
     u_net = u_net.to(device)
     u_net.train()
 

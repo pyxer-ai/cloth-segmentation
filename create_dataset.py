@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 from tqdm import tqdm
+import os
 from datasets import load_dataset
 
 
@@ -43,9 +44,9 @@ def create_train_csv(dataset, output_csv: str, class_mapping: dict, ignore_class
     records = []
 
     for index, item in tqdm(enumerate(dataset['train']), total=len(dataset['train'])):
-        image = np.array(item['mask'])
+        image = np.array(item['mask'].resize((784, 784), Image.NEAREST))
         height, width = image.shape
-        image_id = f"image_{index}"  # Generate a unique name for each image
+        image_id = f"image_{index}.png"  # Generate a unique name for each image
 
         # Initialize masks for each new class ID
         masks = {new_class_id: np.zeros((height, width), dtype=np.uint8) for new_class_id in class_mapping.values()}
@@ -77,6 +78,21 @@ def create_train_csv(dataset, output_csv: str, class_mapping: dict, ignore_class
     df.to_csv(output_csv, index=False)
     return df
 
+def save_images_and_masks(dataset, image_dir: str = "images", mask_dir: str = "masks"):
+    os.makedirs(image_dir, exist_ok=True)
+    # os.makedirs(mask_dir, exist_ok=True)
+    
+    for index, item in tqdm(enumerate(dataset['train']), total=len(dataset)):
+        image = item['image']
+        # mask = item['mask']
+
+        image_path = os.path.join(image_dir, f"image_{index}.png")
+        # mask_path = os.path.join(mask_dir, f"mask_{index}.png")
+
+        image.resize((784, 784)).save(image_path)
+        # mask.save(mask_path)
+
+
 def main():
     ds = load_dataset("mattmdjaga/human_parsing_dataset")
     class_mapping = {
@@ -87,7 +103,9 @@ def main():
         7: 3,
     }
     ignore_classes = {1, 2, 3, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17}
-    df_atr = create_train_csv(ds, "train.csv", class_mapping, ignore_classes)
+    df_atr = create_train_csv(ds, "dataset_atr/train.csv", class_mapping, ignore_classes)
+
+    # save_images_and_masks(ds, "train")
 
 if __name__ == "__main__":
     main()
